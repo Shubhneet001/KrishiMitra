@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>KrishiMitra - Agriculture assistant</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+    <!-- HEADER / NAVIGATION -->
+    <header>
+        <div class="logo">KrishiMitra</div>
+        <nav>
+            <ul>
+                <li onclick="showSection('home')">Home</li>
+                <li onclick="showSection('predict')">Predict</li>
+                <li onclick="openLocationModal()">Set Location</li>
+            </ul>
+        </nav>
+        <div class="auth-buttons">
+            <button class="btn-login" onclick="showLogin()">Login</button>
+            <button class="btn-signup" onclick="showSignup()">Signup</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container">
+        <!-- HOME SECTION -->
+        <section id="home" class="home-section active">
+            <h1 class="home-heading">Welcome to KrishiMitra</h1>
+            <p class="home-subheading">
+                This tool helps farmers identify potential diseases in crops.
+                Upload a photo of your plant and get an instant prediction.
+            </p>
+            <div class="home-images">
+                <img class="hero-image" src="farmingField.png" alt="Crop field 1" />
+            </div>
+        </section>
+
+        <!-- PREDICT SECTION -->
+        <section id="predict" class="predict-section">
+            <div class="predict-form">
+                <h2>Upload Plant Image</h2>
+                <div class="form-group">
+                    <label for="plantImage">Select Image:</label>
+                    <input type="file" id="plantImage" accept="image/*" />
+                </div>
+                <button class="btn-submit" onclick="predictDisease()">Predict Disease</button>
+            </div>
+            <div class="predict-info">
+                <h2>Prediction Results</h2>
+                <p><strong>Disease:</strong> <span id="disease-name">--</span></p>
+                <p><strong>Confidence Score:</strong>
+                    <span id="confidence-score" class="confidence-score">--%</span>
+                </p>
+                <button class="btn-submit" onclick="consultExpert()">Consult Expert</button>
+            </div>
+        </section>
+
+        <!-- HISTORY SECTION -->
+        <section id="history" class="history-section">
+            <div class="history-card">
+                <h3>Disease: Early Blight</h3>
+                <p>Date: 2023-03-01</p>
+                <p>Confidence: 89%</p>
+                <span class="view-details">View Details</span>
+            </div>
+        </section>
+    </div>
+
+    <!-- Toggle Button -->
+    <button id="chatbot-toggle" onclick="toggleChatbot()">💬</button>
+
+    <!-- Chatbot Container -->
+    <div id="chatbot-container" style="display: none;">
+        <div id="chatbot-header">
+            <span>Chatbot</span>
+            <button onclick="toggleChatbot()" id="chatbot-close">❌</button>
+        </div>
+        <div id="chatbot-messages"></div>
+        <div id="chatbot-input-container">
+            <input type="text" id="chatbot-input" placeholder="Type your message..." />
+            <button onclick="sendChat()">Send</button>
+        </div>
+    </div>
+
+    <!-- Location Modal -->
+    <div id="location-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeLocationModal()">&times;</span>
+            <h2>Set Your Location</h2>
+            <input type="text" id="modal-location-input" placeholder="Enter city name" />
+            <button onclick="submitLocation()">Set Location</button>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 CropDisease. All Rights Reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
