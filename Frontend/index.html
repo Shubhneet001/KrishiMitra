@@ -14,7 +14,16 @@
         <nav>
             <ul>
                 <li onclick="showSection('home')">Home</li>
-                <li onclick="showSection('predict')">Predict</li>
+                <li class="dropdown">
+                    <div class="dropdown-btn">
+                        Predict
+                        <img src="dropdown_arrow.svg" alt="Dropdown" class="dropdown-icon" />
+                    </div>
+                    <div class="dropdown-content">
+                        <div onclick="showSection('disease-predict')">Disease Detection</div>
+                        <div onclick="showSection('pest-predict')">Pest Detection</div>
+                    </div>
+                </li>
                 <li onclick="openLocationModal()">Set Location</li>
             </ul>
         </nav>
@@ -30,7 +39,7 @@
         <section id="home" class="home-section active">
             <h1 class="home-heading">Welcome to KrishiMitra</h1>
             <p class="home-subheading">
-                This tool helps farmers identify potential diseases in crops.
+                This tool helps farmers identify potential diseases and pests in crops.
                 Upload a photo of your plant and get an instant prediction.
             </p>
             <div class="home-images">
@@ -38,57 +47,99 @@
             </div>
         </section>
 
-        <!-- PREDICT SECTION -->
-        <section id="predict" class="predict-section">
-            <div class="predict-form">
-                <h2>Upload Plant Image</h2>
-                <div class="form-group">
-                    <label for="plantImage">Select Image:</label>
-                    <input type="file" id="plantImage" accept="image/*" />
+        <!-- DISEASE PREDICT SECTION -->
+        <section id="disease-predict" class="predict-section">
+            <h2 class="section-title">Disease Detection</h2>
+            <div class="prediction-container">
+                <div class="left-column">
+                    <div class="predict-form">
+                        <h3>Upload Plant Image</h3>
+                        <div class="form-group">
+                            <label for="diseaseImage">Select Image:</label>
+                            <input type="file" id="diseaseImage" accept="image/*" 
+                                onchange="previewImage('diseaseImage', 'disease-preview')" />
+                        </div>
+                        <button class="btn-submit" onclick="predictDisease()">Predict Disease</button>
+                    </div>
+                    <div class="prediction-result">
+                        <h3>Prediction Results</h3>
+                        <p><strong>Disease:</strong> <span id="disease-name">--</span></p>
+                        <p><strong>Confidence Score:</strong>
+                            <span id="disease-confidence-score" class="confidence-score">--%</span>
+                        </p>
+                        <button class="btn-submit" onclick="getSolution('disease')">Get Solution</button>
+                    </div>
                 </div>
-                <button class="btn-submit" onclick="predictDisease()">Predict Disease</button>
-            </div>
-            <div class="predict-info">
-                <h2>Prediction Results</h2>
-                <p><strong>Disease:</strong> <span id="disease-name">--</span></p>
-                <p><strong>Confidence Score:</strong>
-                    <span id="confidence-score" class="confidence-score">--%</span>
-                </p>
-                <button class="btn-submit" onclick="consultExpert()">Consult Expert</button>
+                <div class="right-column">
+                    <div class="image-preview-container">
+                        <div id="disease-preview" class="image-preview">
+                            <p>Image preview will appear here</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- HISTORY SECTION -->
-        <section id="history" class="history-section">
-            <div class="history-card">
-                <h3>Disease: Early Blight</h3>
-                <p>Date: 2023-03-01</p>
-                <p>Confidence: 89%</p>
-                <span class="view-details">View Details</span>
+        <!-- PEST PREDICT SECTION -->
+        <section id="pest-predict" class="predict-section">
+            <h2 class="section-title">Pest Detection</h2>
+            <div class="prediction-container">
+                <div class="left-column">
+                    <div class="predict-form">
+                        <h3>Upload Plant Image</h3>
+                        <div class="form-group">
+                            <label for="pestImage">Select Image:</label>
+                            <input type="file" id="pestImage" accept="image/*" 
+                                onchange="previewImage('pestImage', 'pest-preview')" />
+                        </div>
+                        <button class="btn-submit" onclick="predictPest()">Predict Pest</button>
+                    </div>
+                    <div class="prediction-result">
+                        <h3>Prediction Results</h3>
+                        <p><strong>Pest:</strong> <span id="pest-name">--</span></p>
+                        <p><strong>Confidence Score:</strong>
+                            <span id="pest-confidence-score" class="confidence-score">--%</span>
+                        </p>
+                        <button class="btn-submit" onclick="getSolution('pest')">Get Solution</button>
+                    </div>
+                </div>
+                <div class="right-column">
+                    <div class="image-preview-container">
+                        <div id="pest-preview" class="image-preview">
+                            <p>Image preview will appear here</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </div>
 
     <!-- Toggle Button -->
-    <button id="chatbot-toggle" onclick="toggleChatbot()">💬</button>
+    <button id="chatbot-toggle" onclick="toggleChatbot()">
+        <img src="chatbot.svg" alt="Chat" class="chatbot-icon" />
+    </button>
 
     <!-- Chatbot Container -->
     <div id="chatbot-container" style="display: none;">
         <div id="chatbot-header">
             <span>Chatbot</span>
-            <button onclick="toggleChatbot()" id="chatbot-close">❌</button>
+            <button onclick="toggleChatbot()" id="chatbot-close">
+                <img src="cross_icon.png" alt="Close" class="close-icon" />
+            </button>
         </div>
         <div id="chatbot-messages"></div>
         <div id="chatbot-input-container">
-            <input type="text" id="chatbot-input" placeholder="Type your message..." />
-            <button onclick="sendChat()">Send</button>
+            <input type="text" id="chatbot-input" placeholder="Ask me anything..." />
+            <!-- <button onclick="sendChat()">Send</button> -->
         </div>
     </div>
 
     <!-- Location Modal -->
     <div id="location-modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeLocationModal()">&times;</span>
+            <span class="close-btn" onclick="closeLocationModal()">
+                <img src="cross_icon.png" style="filter: none;" alt="Close" class="close-icon" />
+            </span>
             <h2>Set Your Location</h2>
             <input type="text" id="modal-location-input" placeholder="Enter city name" />
             <button onclick="submitLocation()">Set Location</button>
@@ -97,7 +148,7 @@
 
     <!-- FOOTER -->
     <footer>
-        <p>© 2025 CropDisease. All Rights Reserved.</p>
+        <p>© 2025 KrishiMitra. All Rights Reserved.</p>
     </footer>
 
     <script src="script.js"></script>
