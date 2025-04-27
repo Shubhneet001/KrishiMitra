@@ -58,6 +58,3 @@ async def crop_advice(crop_name: str = Query(..., title="Crop name")):
 async def set_location(location: str = Query(..., description="Location to set for chatbot")):
     chatbot.location = location
     return JSONResponse(content={"message": f"Location set to {location}"})
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
