@@ -7,9 +7,12 @@ import gdown
 import json
 import os
 import io
+from pathlib import Path
 
-MODEL_PATH = 'disease_model/disease_model.pth'
-CLASS_INDICES_PATH = 'disease_model/disease_classes.json'
+BASE_DIR = Path(__file__).resolve().parent
+
+MODEL_PATH = BASE_DIR / 'disease_model' / 'disease_model.pth'
+CLASS_INDICES_PATH = BASE_DIR / 'disease_model' / 'disease_classes.json'
 PLANT_DISEASE_FILE_ID = "1As5gawGTPeHM5mTACXMEEKHs0DS8qK7T"
 
 def download_plant_disease_model():

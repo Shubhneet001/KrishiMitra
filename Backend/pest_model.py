@@ -7,9 +7,12 @@ import torch.nn as nn
 import gdown
 import os
 import io
+from pathlib import Path
 
-MODEL_PATH = "pest_model/pest_model.pth"
-CLASS_INDICES_PATH = "pest_model/pest_classes.json"
+BASE_DIR = Path(__file__).resolve().parent
+
+MODEL_PATH = BASE_DIR / 'pest_model' / 'pest_model.pth'
+CLASS_INDICES_PATH = BASE_DIR / 'pest_model' / 'pest_classes.json'
 PEST_CLASSIFICATION_FILE_ID = "1s5VddwxRoKHrqSBpRkfnZsomadkKQnzp"
 
 def download_pest_classification_model():
