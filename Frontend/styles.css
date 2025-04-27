@@ -79,6 +79,7 @@ nav li:hover {
   z-index: 1;
   border-radius: 4px;
   margin-top: 0.5rem;
+  box-shadow: 0px 2px 20px 0px #000000a6;
 }
 
 .dropdown-content div {
@@ -444,19 +445,35 @@ footer {
 }
 
 #chatbot-input-container {
+  height: 45px;
+  margin: 10px;
+  border-radius: 20px;
   display: flex;
-  padding: 0.75rem;
+  /* padding: 0.75rem; */
+  box-shadow: 1px 3px 12px 0px;
 }
+
 
 #chatbot-input {
   flex: 1;
   padding: 0.5rem 0.75rem;
   border: none;
-  box-shadow: 1px 3px 12px 0px;
+  /* box-shadow: 1px 3px 12px 0px; */
   border-radius: 15px;
   outline: none;
   font-size: 0.95rem;
 }
+
+#send_button{
+  width: 17%;
+  cursor: pointer;
+  border-radius: 100%;
+}
+#send_button:hover{
+  filter: contrast(2);
+}
+
+
 
 #chatbot-input-container button {
   background-color: #044927;

@@ -1,6 +1,5 @@
-const backendBaseURL = window.location.hostname.includes('localhost') 
-    ? 'http://127.0.0.1:8000' 
-    : 'https://krishimitra-api.onrender.com';
+const backendBaseURL = 'http://127.0.0.1:8000'
+// const backendBaseURL = 'https://krishimitra-api.onrender.com'
 
 
 // Show selected section
@@ -52,7 +51,10 @@ async function predictDisease() {
         });
 
         const data = await res.json();
-        document.getElementById("disease-name").innerText = data.disease || "Unknown";
+        const plant_name = data.disease.replace(/__+/, ',').replace(/_/g, ' ').split(',')[0].trim();
+        const disease_name = data.disease.replace(/__+/, ',').replace(/_/g, ' ').split(',')[1].trim();
+        document.getElementById("plant-name").innerText = plant_name || "Unknown";
+        document.getElementById("disease-name").innerText = disease_name || "Unknown";
         document.getElementById("disease-confidence-score").innerText = data.confidence;
     } catch (error) {
         console.error("Disease prediction failed:", error);
@@ -97,12 +99,13 @@ function getSolution(type) {
     let query = "";
     
     if (type === 'disease') {
+        const plantName = document.getElementById("plant-name").innerText;
         const diseaseName = document.getElementById("disease-name").innerText;
         if (diseaseName === "--" || diseaseName === "Unknown" || diseaseName === "Processing..." || diseaseName === "Error") {
             alert("Please predict a disease first!");
             return;
         }
-        query = `What is the solution for ${diseaseName} disease in plants?`;
+        query = `My ${plantName} plant has ${diseaseName} disease, what's the solution?`;
     } else if (type === 'pest') {
         const pestName = document.getElementById("pest-name").innerText;
         if (pestName === "--" || pestName === "Unknown" || pestName === "Processing..." || pestName === "Error") {

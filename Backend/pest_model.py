@@ -67,5 +67,10 @@ def predict_pest(image_bytes):
     with torch.no_grad():
         output = model(image)
         _, predicted = torch.max(output, 1)
+        probabilities = torch.nn.functional.softmax(output[0], dim=0)
+        confidence = probabilities[predicted].item() * 100
 
-    return {"pest": class_names[predicted.item()]}
+    return {
+        "pest": class_names[predicted.item()],
+        "confidence": f"{confidence:.2f}%"
+    }

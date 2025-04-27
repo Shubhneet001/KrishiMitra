@@ -108,6 +108,21 @@ class KrishiMitra:
 
     def generate_ai_response(self, query: str) -> str:
         try:
+            # Fetch the weather data for the current location
+            weather_info = self.get_weather_data(self.location)
+            weather_context = ""
+            
+            if weather_info:
+                # Constructing weather context for the prompt
+                weather_context = f"""
+                <h4>🌤 Current Weather in {weather_info['location']}:</h4>
+                <p><strong>Temperature:</strong> {weather_info['temperature']}°C</p>
+                <p><strong>Conditions:</strong> {weather_info['conditions']}</p>
+                <p><strong>Humidity:</strong> {weather_info['humidity']}%</p>
+                <p><strong>Wind Speed:</strong> {weather_info['wind_speed']} kph</p>
+                <p><strong>Rainfall:</strong> {weather_info['rainfall']} mm</p>
+                """
+            
             full_prompt = f"""
             You are Krishi Mitra, an advanced AI agricultural assistant. 
             Provide a helpful HTML-formatted response to the user's query below:
@@ -116,6 +131,7 @@ class KrishiMitra:
             - Current location: {self.location}
             - Agricultural knowledge base loaded
             - Focus on practical, actionable advice
+            - Weather conditions: {weather_context}
 
             Query: {query}
 
@@ -130,6 +146,7 @@ class KrishiMitra:
 
         except Exception as e:
             return f"<p>Sorry, I couldn't process your request. Error: {str(e)}</p>"
+
 
     def get_crop_specific_advice(self, crop_name: str):
         crop_info = self.agricultural_database["crops"].get(crop_name.lower())

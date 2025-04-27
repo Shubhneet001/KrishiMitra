@@ -63,6 +63,7 @@
                     </div>
                     <div class="prediction-result">
                         <h3>Prediction Results</h3>
+                        <p><strong>Plant:</strong> <span id="plant-name">--</span></p>
                         <p><strong>Disease:</strong> <span id="disease-name">--</span></p>
                         <p><strong>Confidence Score:</strong>
                             <span id="disease-confidence-score" class="confidence-score">--%</span>
@@ -116,13 +117,13 @@
 
     <!-- Toggle Button -->
     <button id="chatbot-toggle" onclick="toggleChatbot()">
-        <img src="chatbot.svg" alt="Chat" class="chatbot-icon" />
+        <img src="chatbot-icon.png" alt="Chat" class="chatbot-icon" />
     </button>
 
     <!-- Chatbot Container -->
     <div id="chatbot-container" style="display: none;">
-        <div id="chatbot-header">
-            <span>Chatbot</span>
+        <div id="chatbot-header" style="box-shadow: 10px 10px;">
+            <span style="margin-left: 10px;">Chatbot</span>
             <button onclick="toggleChatbot()" id="chatbot-close">
                 <img src="cross_icon.png" alt="Close" class="close-icon" />
             </button>
@@ -130,7 +131,7 @@
         <div id="chatbot-messages"></div>
         <div id="chatbot-input-container">
             <input type="text" id="chatbot-input" placeholder="Ask me anything..." />
-            <!-- <button onclick="sendChat()">Send</button> -->
+            <img onclick="sendChat()" src="arrow_icon.png" alt="enter" id="send_button" />
         </div>
     </div>
 
