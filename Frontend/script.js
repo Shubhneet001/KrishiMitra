@@ -1,4 +1,6 @@
-const backendBaseURL = 'https://your-backend-app-name.onrender.com'; // <-- your real deployed backend URL
+const backendBaseURL = window.location.hostname.includes('localhost') 
+    ? 'http://127.0.0.1:8000' 
+    : 'https://krishimitra-api.onrender.com';
 
 
 // Show selected section

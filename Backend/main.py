@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, UploadFile, File, Query
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
@@ -58,3 +59,8 @@ async def crop_advice(crop_name: str = Query(..., title="Crop name")):
 async def set_location(location: str = Query(..., description="Location to set for chatbot")):
     chatbot.location = location
     return JSONResponse(content={"message": f"Location set to {location}"})
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
+
