@@ -8,8 +8,8 @@ import gdown
 import os
 import io
 
-MODEL_PATH = "Backend/pest_model/pest_model.pth"
-CLASS_INDICES_PATH = "Backend/pest_model/pest_classes.json"
+MODEL_PATH = "pest_model/pest_model.pth"
+CLASS_INDICES_PATH = "pest_model/pest_classes.json"
 PEST_CLASSIFICATION_FILE_ID = "1s5VddwxRoKHrqSBpRkfnZsomadkKQnzp"
 
 def download_pest_classification_model():

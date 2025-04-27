@@ -8,8 +8,8 @@ import json
 import os
 import io
 
-MODEL_PATH = 'Backend/disease_model/disease_model.pth'
-CLASS_INDICES_PATH = 'Backend/disease_model/disease_classes.json'
+MODEL_PATH = 'disease_model/disease_model.pth'
+CLASS_INDICES_PATH = 'disease_model/disease_classes.json'
 PLANT_DISEASE_FILE_ID = "1As5gawGTPeHM5mTACXMEEKHs0DS8qK7T"
 
 def download_plant_disease_model():

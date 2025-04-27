@@ -1,3 +1,6 @@
+const backendBaseURL = 'https://your-backend-app-name.onrender.com'; // <-- your real deployed backend URL
+
+
 // Show selected section
 function showSection(sectionId) {
     // Hide all sections
@@ -41,7 +44,7 @@ async function predictDisease() {
         document.getElementById("disease-name").innerText = "Processing...";
         document.getElementById("disease-confidence-score").innerText = "--";
         
-        const res = await fetch('http://127.0.0.1:8000/disease-prediction/', {
+        const res = await fetch(`${backendBaseURL}/disease-prediction/`, {
             method: 'POST',
             body: formData
         });
@@ -71,7 +74,7 @@ async function predictPest() {
         document.getElementById("pest-name").innerText = "Processing...";
         document.getElementById("pest-confidence-score").innerText = "--";
         
-        const res = await fetch('http://127.0.0.1:8000/pest-prediction/', {
+        const res = await fetch(`${backendBaseURL}/pest-prediction/`, {
             method: 'POST',
             body: formData
         });
@@ -167,7 +170,7 @@ async function sendChat() {
         typingDiv.textContent = "Thinking...";
         document.getElementById("chatbot-messages").appendChild(typingDiv);
         
-        const res = await fetch(`http://127.0.0.1:8000/chatbot/?query=${encodeURIComponent(message)}`);
+        const res = await fetch(`${backendBaseURL}/chatbot/?query=${encodeURIComponent(message)}`);
         const data = await res.json();
         
         // Remove typing indicator
@@ -202,7 +205,7 @@ async function submitLocation() {
     }
 
     try {
-        const res = await fetch(`http://127.0.0.1:8000/set-location/?location=${encodeURIComponent(location)}`, {
+        const res = await fetch(`${backendBaseURL}/set-location/?location=${encodeURIComponent(location)}`, {
             method: "PUT"
         });
         const data = await res.json();
