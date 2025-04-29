@@ -75,7 +75,7 @@ nav li:hover {
   position: absolute;
   background-color: #044927;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   border-radius: 4px;
   margin-top: 0.5rem;
@@ -215,7 +215,7 @@ section.active {
   max-width: 50%;
 }
 
-.predict-form, 
+.predict-form,
 .prediction-result {
   background-color: #fff;
   padding: 1.5rem;
@@ -245,6 +245,13 @@ section.active {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  box-shadow: 5px 6px 20px 0px;
+  border-radius: 5%;
+  transition: transform 0.3s ease;
+}
+
+.image-preview img:hover{
+  transform: scale(1.1);
 }
 
 .predict-form h3,
@@ -292,7 +299,7 @@ input[type="file"] {
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 3px 4px 20px 1px rgb(0 0 0 / 64%);
   transition: transform 0.3s ease-in-out;
   width: 50px;
   height: 50px;
@@ -340,8 +347,8 @@ footer {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  width: 400px;
-  height: 600px;
+  width: 35%;
+  height: 90%;
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0px 0px 20px 20px rgba(0, 0, 0, 0.15);
@@ -357,12 +364,11 @@ footer {
 }
 
 #chatbot-header {
-  background-color: #044927;
+  background-color: #09a156;
   color: white;
   padding: 0.5rem 0.5rem;
   font-weight: bold;
-  display: flex
-;
+  display: flex;
   justify-content: space-between;
   align-items: center;
 }
@@ -464,13 +470,22 @@ footer {
   font-size: 0.95rem;
 }
 
-#send_button{
-  width: 17%;
+#send_button {
+  /* margin: 3px; */
+  width: 12%;
+  height: 100%;
   cursor: pointer;
   border-radius: 100%;
+  transition: filter 0.3s ease;
 }
-#send_button:hover{
-  filter: contrast(2);
+
+#send_img {
+  width: 100%;
+  height: 100%;
+}
+
+#send_button:hover {
+  filter: brightness(85%);
 }
 
 
@@ -570,6 +585,7 @@ footer {
     opacity: 0;
     transform: translate(-50%, -40%);
   }
+
   to {
     opacity: 1;
     transform: translate(-50%, -50%);
@@ -585,21 +601,21 @@ footer {
   .prediction-container {
     flex-direction: column;
   }
-  
+
   .left-column,
   .right-column {
     max-width: 100%;
   }
-  
+
   .image-preview-container {
     min-height: 250px;
   }
-  
+
   header {
     padding: 0.5rem 1rem;
     flex-wrap: wrap;
   }
-  
+
   nav ul {
     gap: 0.5rem;
   }

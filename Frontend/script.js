@@ -1,18 +1,12 @@
 const backendBaseURL = 'http://127.0.0.1:8000'
-// const backendBaseURL = 'https://krishimitra-api.onrender.com'
 
-
-// Show selected section
 function showSection(sectionId) {
-    // Hide all sections
     document.querySelectorAll('section').forEach(section => {
         section.classList.remove('active');
     });
-    // Show the selected section
     document.getElementById(sectionId).classList.add('active');
 }
 
-// Preview the selected image
 function previewImage(inputId, previewId) {
     const fileInput = document.getElementById(inputId);
     const previewDiv = document.getElementById(previewId);
@@ -31,7 +25,6 @@ function previewImage(inputId, previewId) {
     }
 }
 
-// Call disease prediction API
 async function predictDisease() {
     const fileInput = document.getElementById('diseaseImage');
     const file = fileInput.files[0];
@@ -41,7 +34,6 @@ async function predictDisease() {
     formData.append('file', file);
 
     try {
-        // Show loading state
         document.getElementById("disease-name").innerText = "Processing...";
         document.getElementById("disease-confidence-score").innerText = "--";
         
@@ -64,7 +56,6 @@ async function predictDisease() {
     }
 }
 
-// Call pest prediction API
 async function predictPest() {
     const fileInput = document.getElementById('pestImage');
     const file = fileInput.files[0];
@@ -74,7 +65,6 @@ async function predictPest() {
     formData.append('file', file);
 
     try {
-        // Show loading state
         document.getElementById("pest-name").innerText = "Processing...";
         document.getElementById("pest-confidence-score").innerText = "--";
         
@@ -94,7 +84,6 @@ async function predictPest() {
     }
 }
 
-// Get solution for detected issues by opening chatbot and sending query
 function getSolution(type) {
     let query = "";
     
@@ -115,18 +104,15 @@ function getSolution(type) {
         query = `How to control ${pestName} pest in crops?`;
     }
     
-    // Open chatbot if it's not already open
     const chatbox = document.getElementById("chatbot-container");
     if (!chatbox.classList.contains("open")) {
         toggleChatbot();
     }
     
-    // Set the query in the input field and send it
     document.getElementById("chatbot-input").value = query;
     sendChat();
 }
 
-// Toggle chatbot visibility
 function toggleChatbot() {
     const chatbox = document.getElementById("chatbot-container");
     const toggleBtn = document.getElementById("chatbot-toggle");
@@ -142,13 +128,11 @@ function toggleChatbot() {
     }
 }
 
-// Append message to chatbot
 function appendMessage(message, sender = "bot") {
     const messageDiv = document.createElement("div");
     messageDiv.classList.add("message", sender === "user" ? "user-message" : "bot-message");
 
     if (sender === "bot") {
-        // Clean message if it has HTML tags
         const cleanedMessage = message.slice(7, -3);
         messageDiv.innerHTML = cleanedMessage;
     } else {
@@ -159,7 +143,6 @@ function appendMessage(message, sender = "bot") {
     document.getElementById("chatbot-messages").scrollTop = document.getElementById("chatbot-messages").scrollHeight;
 }
 
-// Send chat to FastAPI
 async function sendChat() {
     const input = document.getElementById("chatbot-input");
     const message = input.value.trim();
@@ -169,7 +152,6 @@ async function sendChat() {
     input.value = "";
 
     try {
-        // Show typing indicator
         const typingDiv = document.createElement("div");
         typingDiv.classList.add("message", "bot-message", "typing-indicator");
         typingDiv.textContent = "Thinking...";
@@ -178,7 +160,6 @@ async function sendChat() {
         const res = await fetch(`${backendBaseURL}/chatbot/?query=${encodeURIComponent(message)}`);
         const data = await res.json();
         
-        // Remove typing indicator
         document.getElementById("chatbot-messages").removeChild(typingDiv);
         
         appendMessage(data.response, "bot");
@@ -188,20 +169,15 @@ async function sendChat() {
     }
 }
 
-// Location handling
 let userLocation = null;
-
-// Show the location modal
 function openLocationModal() {
     document.getElementById("location-modal").style.display = "block";
 }
 
-// Hide the location modal
 function closeLocationModal() {
     document.getElementById("location-modal").style.display = "none";
 }
 
-// Submit location to API
 async function submitLocation() {
     const location = document.getElementById("modal-location-input").value.trim();
     if (!location) {
@@ -215,7 +191,6 @@ async function submitLocation() {
         });
         const data = await res.json();
         
-        // Update user location and show confirmation
         userLocation = location;
         alert(data.message || `Location set to ${location}!`);
         closeLocationModal();
@@ -225,7 +200,6 @@ async function submitLocation() {
     }
 }
 
-// Close modal if user clicks outside the modal box
 window.onclick = function(event) {
     const modal = document.getElementById("location-modal");
     if (event.target === modal) {
@@ -233,14 +207,12 @@ window.onclick = function(event) {
     }
 };
 
-// Add event listener for Enter key in chatbot input
 document.getElementById("chatbot-input").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
         sendChat();
     }
 });
 
-// Handle login/signup placeholders
 function showLogin() {
     alert("Login feature coming soon!");
 }
@@ -249,8 +221,6 @@ function showSignup() {
     alert("Signup feature coming soon!");
 }
 
-// Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    // Make sure home section is shown by default
     showSection('home');
 });

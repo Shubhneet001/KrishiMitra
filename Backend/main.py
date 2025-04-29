@@ -8,7 +8,6 @@ from disease_model import predict_disease, download_plant_disease_model
 from pest_model import predict_pest, download_pest_classification_model
 from chatbot import KrishiMitra
 
-# Download models before app starts
 download_plant_disease_model()
 download_pest_classification_model()
 
