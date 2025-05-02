@@ -16,10 +16,10 @@ CLASS_INDICES_PATH = BASE_DIR / 'disease_model' / 'disease_classes.json'
 PLANT_DISEASE_FILE_ID = "1As5gawGTPeHM5mTACXMEEKHs0DS8qK7T"
 
 def download_plant_disease_model():
-    if not os.path.exists(MODEL_PATH):
+    if not MODEL_PATH.exists():
         print(f"Downloading plant disease model...")
         url = f"https://drive.google.com/uc?id={PLANT_DISEASE_FILE_ID}"
-        gdown.download(url, MODEL_PATH, quiet=False)
+        gdown.download(url, str(MODEL_PATH), quiet=False)
         print("Plant disease model downloaded!")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -136,6 +136,7 @@ class KrishiMitra:
             Query: {query}
 
             Please return the response in clean, structured HTML with:
+            - <br> before main highlights
             - <strong> for highlights
             - <ul>/<li> for lists
             - <p> for paragraphs

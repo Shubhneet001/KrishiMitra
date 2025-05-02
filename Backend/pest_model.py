@@ -16,10 +16,10 @@ CLASS_INDICES_PATH = BASE_DIR / 'pest_model' / 'pest_classes.json'
 PEST_CLASSIFICATION_FILE_ID = "1s5VddwxRoKHrqSBpRkfnZsomadkKQnzp"
 
 def download_pest_classification_model():
-    if not os.path.exists(MODEL_PATH):
+    if not MODEL_PATH.exists():
         print(f"Downloading pest classification model...")
         url = f"https://drive.google.com/uc?id={PEST_CLASSIFICATION_FILE_ID}"
-        gdown.download(url, MODEL_PATH, quiet=False)
+        gdown.download(url, str(MODEL_PATH), quiet=False)
         print("Pest classification model downloaded!")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
