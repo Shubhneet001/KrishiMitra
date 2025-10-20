@@ -1,3 +1,7 @@
 .env
-Backend/disease_model/disease_model.pth
-Backend/pest_model/pest_model.pth
+test_images
+*.pth
+*.h5
+*.keras
+*__pycache__/
+.vscode/*

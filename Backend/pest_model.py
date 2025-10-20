@@ -1,76 +1,118 @@
-import torch
-import json
-import torchvision.transforms as transforms
+import tensorflow as tf
+import numpy as np
+import cv2
 from PIL import Image
-import torchvision.models as models
-import torch.nn as nn
-import gdown
-import os
 import io
-from pathlib import Path
+from typing import Dict, Union, List
+import logging
+import os
 
-BASE_DIR = Path(__file__).resolve().parent
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-MODEL_PATH = BASE_DIR / 'pest_model' / 'pest_model.pth'
-CLASS_INDICES_PATH = BASE_DIR / 'pest_model' / 'pest_classes.json'
-PEST_CLASSIFICATION_FILE_ID = "1s5VddwxRoKHrqSBpRkfnZsomadkKQnzp"
+CLASS_NAMES = [
+    'aphids', 'armyworm', 'beetle', 'bollworm', 'grasshopper',
+    'mites', 'mosquito', 'sawfly', 'stem_borer'
+]
 
-def download_pest_classification_model():
-    if not MODEL_PATH.exists():
-        print(f"Downloading pest classification model...")
-        url = f"https://drive.google.com/uc?id={PEST_CLASSIFICATION_FILE_ID}"
-        gdown.download(url, str(MODEL_PATH), quiet=False)
-        print("Pest classification model downloaded!")
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-def load_class_names(class_indices_path):
-    with open(class_indices_path, "r") as f:
-        class_indices = json.load(f)
-    return {v: k for k, v in class_indices.items()}
-
-def load_model(model_path, class_indices_path, device):
-    download_pest_classification_model()
-    class_names = load_class_names(class_indices_path)
-
-    model = models.efficientnet_b0(pretrained=False)
-    num_features = model.classifier[1].in_features
-    model.classifier = nn.Sequential(
-        nn.Flatten(),
-        nn.Linear(num_features, 512),
-        nn.ReLU(),
-        nn.Dropout(0.5),
-        nn.Linear(512, len(class_names)),
-        nn.Softmax(dim=1)
-    )
-
-    model.load_state_dict(torch.load(model_path, map_location=device))
-    model.to(device)
-    model.eval()
-
-    return model, class_names
-
-def preprocess_image(image, device):
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ])
-    image = transform(image).unsqueeze(0).to(device)
-    return image
-
-def predict_pest(image_bytes):
-    model, class_names = load_model(MODEL_PATH, CLASS_INDICES_PATH, device)
-    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    image = preprocess_image(image, device)
-
-    with torch.no_grad():
-        output = model(image)
-        _, predicted = torch.max(output, 1)
-        probabilities = torch.nn.functional.softmax(output[0], dim=0)
-        confidence = probabilities[predicted].item() * 100
-
-    return {
-        "pest": class_names[predicted.item()],
-        "confidence": f"{confidence:.2f}%"
-    }
+class PestModel:
+    """Pest classification model wrapper"""
+    
+    def __init__(self, model_path: str = "Backend/models/pest_classification.keras"):
+        self.model_path = model_path
+        self.model = None
+        self.target_size = (224, 224)
+        self.class_names = CLASS_NAMES
+        self.load_model()
+    
+    def load_model(self):
+        """Load the trained model"""
+        try:
+            if not os.path.exists(self.model_path):
+                raise FileNotFoundError(f"Model file not found: {self.model_path}")
+            self.model = tf.keras.models.load_model(self.model_path, compile=False)
+            logger.info(f"Pest model loaded successfully from {self.model_path}")
+        except Exception as e:
+            logger.error(f"Error loading pest model: {e}")
+            raise
+    
+    def preprocess_image(self, img_input: Union[str, bytes]) -> np.ndarray:
+        """
+        Preprocess image for prediction
+        
+        Args:
+            img_input: Either file path (str) or image bytes
+            
+        Returns:
+            Preprocessed image array
+        """
+        try:
+            if isinstance(img_input, bytes):
+                # Convert bytes to numpy array
+                nparr = np.frombuffer(img_input, np.uint8)
+                img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            else:
+                img = cv2.imread(img_input)
+            
+            if img is None:
+                raise ValueError("Failed to load image")
+            
+            # Convert BGR to RGB
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            
+            # Resize
+            img = cv2.resize(img, self.target_size)
+            
+            # Expand dimensions and preprocess
+            img_array = np.expand_dims(img, axis=0)
+            img_array = tf.keras.applications.mobilenet.preprocess_input(img_array)
+            
+            return img_array
+        except Exception as e:
+            logger.error(f"Error preprocessing image: {e}")
+            raise ValueError(f"Failed to preprocess image: {str(e)}")
+    
+    def predict(self, img_input: Union[str, bytes]) -> Dict:
+        """
+        Predict pest from image
+        
+        Args:
+            img_input: Either file path or image bytes
+            
+        Returns:
+            Dictionary with prediction results
+        """
+        try:
+            if self.model is None:
+                raise RuntimeError("Model not loaded")
+            
+            # Preprocess
+            img_array = self.preprocess_image(img_input)
+            
+            # Predict
+            predictions = self.model.predict(img_array, verbose=0)
+            pred_index = int(np.argmax(predictions[0]))
+            confidence = float(predictions[0][pred_index]) * 100
+            
+            # Get top 3 predictions
+            top_3_indices = np.argsort(predictions[0])[-3:][::-1]
+            top_3_predictions = [
+                {
+                    "pest": self.class_names[i],
+                    "confidence": round(float(predictions[0][i]) * 100, 2)
+                }
+                for i in top_3_indices
+            ]
+            
+            return {
+                "success": True,
+                "predicted_pest": self.class_names[pred_index],
+                "confidence": round(confidence, 2),
+                "top_3_predictions": top_3_predictions
+            }
+        except Exception as e:
+            logger.error(f"Prediction error: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }

@@ -1,72 +1,153 @@
-import torch
-import torch.nn as nn
-import torchvision.transforms as transforms
-from torchvision import models
+import tensorflow as tf
+import numpy as np
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing import image
 from PIL import Image
-import gdown
-import json
-import os
 import io
-from pathlib import Path
+import os
+from typing import Dict, Union, Tuple
+import logging
 
-BASE_DIR = Path(__file__).resolve().parent
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-MODEL_PATH = BASE_DIR / 'disease_model' / 'disease_model.pth'
-CLASS_INDICES_PATH = BASE_DIR / 'disease_model' / 'disease_classes.json'
-PLANT_DISEASE_FILE_ID = "1As5gawGTPeHM5mTACXMEEKHs0DS8qK7T"
+# Class dictionary for disease classification
+CLASS_DICT = {
+    0: "Apple___Apple_scab",
+    1: "Apple___Black_rot",
+    2: "Apple___Cedar_apple_rust",
+    3: "Apple___healthy",
+    4: "Blueberry___healthy",
+    5: "Cherry_(including_sour)___Powdery_mildew",
+    6: "Cherry_(including_sour)___healthy",
+    7: "Corn_(maize)___Cercospora_leaf_spot_Gray_leaf_spot",
+    8: "Corn_(maize)___Common_rust_",
+    9: "Corn_(maize)___Northern_Leaf_Blight",
+    10: "Corn_(maize)___healthy",
+    11: "Grape___Black_rot",
+    12: "Grape___Esca_(Black_Measles)",
+    13: "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)",
+    14: "Grape___healthy",
+    15: "Orange___Haunglongbing_(Citrus_greening)",
+    16: "Peach___Bacterial_spot",
+    17: "Peach___healthy",
+    18: "Pepper,_bell___Bacterial_spot",
+    19: "Pepper,_bell___healthy",
+    20: "Potato___Early_blight",
+    21: "Potato___Late_blight",
+    22: "Potato___healthy",
+    23: "Raspberry___healthy",
+    24: "Soybean___healthy",
+    25: "Squash___Powdery_mildew",
+    26: "Strawberry___Leaf_scorch",
+    27: "Strawberry___healthy",
+    28: "Tomato___Bacterial_spot",
+    29: "Tomato___Early_blight",
+    30: "Tomato___Late_blight",
+    31: "Tomato___Leaf_Mold",
+    32: "Tomato___Septoria_leaf_spot",
+    33: "Tomato___Spider_mites_(Two-spotted_spider_mite)",
+    34: "Tomato___Target_Spot",
+    35: "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+    36: "Tomato___Tomato_mosaic_virus",
+    37: "Tomato___healthy"
+}
 
-def download_plant_disease_model():
-    if not MODEL_PATH.exists():
-        print(f"Downloading plant disease model...")
-        url = f"https://drive.google.com/uc?id={PLANT_DISEASE_FILE_ID}"
-        gdown.download(url, str(MODEL_PATH), quiet=False)
-        print("Plant disease model downloaded!")
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-def load_model(model_path, class_indices_path, device):
-    model = models.resnet50(pretrained=False)
-    num_classes = 38
-    model.fc = nn.Sequential(
-        nn.Linear(model.fc.in_features, 512),
-        nn.ReLU(),
-        nn.Dropout(0.4),
-        nn.Linear(512, num_classes)
-    )
-    model.load_state_dict(torch.load(model_path, map_location=device))
-    model.to(device)
-    model.eval()
-
-    with open(class_indices_path, 'r') as f:
-        class_indices = json.load(f)
-
-    return model, class_indices
-
-def preprocess_image(image, device):
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
-    image = transform(image).unsqueeze(0).to(device)
-    return image
-
-def predict_disease(image_bytes):
-    model, class_indices = load_model(MODEL_PATH, CLASS_INDICES_PATH, device)
+class DiseaseModel:
+    """Disease detection model wrapper"""
     
-    image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
-    image = preprocess_image(image, device)
-
-    with torch.no_grad():
-        outputs = model(image)
-        _, predicted_idx = torch.max(outputs, 1)
+    def __init__(self, model_path: str = "Backend/models/crop_disease_detection.h5"):
+        self.model_path = model_path
+        self.model = None
+        self.target_size = (256, 256)
+        self.load_model()
+        self.class_names = CLASS_DICT
+    
+    def load_model(self):
+        """Load the trained model"""
+        try:
+            if not os.path.exists(self.model_path):
+                raise FileNotFoundError(f"Model file not found: {self.model_path}")
+            self.model = load_model(self.model_path)
+            logger.info(f"Disease model loaded successfully from {self.model_path}")
+        except Exception as e:
+            logger.error(f"Error loading disease model: {e}")
+            raise
+    
+    def preprocess_image(self, img_input: Union[str, bytes]) -> np.ndarray:
+        """
+        Preprocess image for prediction
         
-        predicted_class = str(predicted_idx.item())
-        class_name = class_indices.get(predicted_class, "Unknown")
-        probabilities = torch.nn.functional.softmax(outputs[0], dim=0)
-        confidence = probabilities[predicted_idx].item() * 100
-
-    return {
-        "disease": class_name,
-        "confidence": f"{confidence:.2f}%"
-    }
+        Args:
+            img_input: Either file path (str) or image bytes
+            
+        Returns:
+            Preprocessed image array
+        """
+        try:
+            if isinstance(img_input, bytes):
+                img = Image.open(io.BytesIO(img_input))
+            else:
+                img = Image.open(img_input)
+            
+            # Convert to RGB if necessary
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # Resize
+            img = img.resize(self.target_size)
+            
+            # Convert to array and normalize
+            img_array = np.array(img, dtype=np.float32)
+            img_array = img_array / 255.0
+            img_array = np.expand_dims(img_array, axis=0)
+            
+            return img_array
+        except Exception as e:
+            logger.error(f"Error preprocessing image: {e}")
+            raise ValueError(f"Failed to preprocess image: {str(e)}")
+    
+    def predict(self, img_input: Union[str, bytes]) -> Dict:
+        """
+        Predict disease from image
+        
+        Args:
+            img_input: Either file path or image bytes
+            
+        Returns:
+            Dictionary with prediction results
+        """
+        try:
+            if self.model is None:
+                raise RuntimeError("Model not loaded")
+            
+            # Preprocess
+            img_array = self.preprocess_image(img_input)
+            
+            # Predict
+            predictions = self.model.predict(img_array, verbose=0)
+            pred_index = int(np.argmax(predictions[0]))
+            confidence = float(np.max(predictions[0])) * 100
+            
+            # Get class label
+            class_name = CLASS_DICT.get(pred_index, "Unknown")
+            
+            # Extract plant and disease information
+            parts = class_name.split("___")
+            plant = parts[0] if len(parts) > 0 else "Unknown"
+            disease = parts[1] if len(parts) > 1 else "Unknown"
+            
+            return {
+                "success": True,
+                "predicted_class": class_name,
+                "plant": plant,
+                "disease": disease,
+                "confidence": round(confidence, 2),
+                "is_healthy": "healthy" in disease.lower()
+            }
+        except Exception as e:
+            logger.error(f"Prediction error: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
