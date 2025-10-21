@@ -7,7 +7,7 @@ sentence-transformers
 numpy
 tensorflow
 Pillow
-opncv-python
+opencv-python
 
 fastapi
 uvicorn

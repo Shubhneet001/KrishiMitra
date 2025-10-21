@@ -9,9 +9,9 @@ from typing import Optional
 import uvicorn
 import logging
 
-from Backend.disease_model import DiseaseModel
-from Backend.pest_model import PestModel
-from Backend.chatbot import KrishiMitra
+from src.disease_model import DiseaseModel
+from src.pest_model import PestModel
+from src.chatbot import KrishiMitra
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -227,6 +227,7 @@ async def get_models_info():
         }
     }
 
-# if __name__ == "__main__":
-#     port = int(os.environ.get("PORT", 8000))
-#     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))
+    # uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)     # for using across multiple devices
+    uvicorn.run("main:app", host="localhost", port=port, reload=True)       # for local use only

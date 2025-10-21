@@ -11,7 +11,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Class dictionary for disease classification
 CLASS_DICT = {
     0: "Apple___Apple_scab",
     1: "Apple___Black_rot",
@@ -56,7 +55,7 @@ CLASS_DICT = {
 class DiseaseModel:
     """Disease detection model wrapper"""
     
-    def __init__(self, model_path: str = "Backend/models/crop_disease_detection.h5"):
+    def __init__(self, model_path: str = "Backend/models/disease_classifier.h5"):
         self.model_path = model_path
         self.model = None
         self.target_size = (256, 256)
@@ -77,12 +76,9 @@ class DiseaseModel:
     def preprocess_image(self, img_input: Union[str, bytes]) -> np.ndarray:
         """
         Preprocess image for prediction
-        
-        Args:
-            img_input: Either file path (str) or image bytes
-            
-        Returns:
-            Preprocessed image array
+
+        Args: img_input: Either file path (str) or image bytes
+        Returns: Preprocessed image array
         """
         try:
             if isinstance(img_input, bytes):
@@ -110,12 +106,9 @@ class DiseaseModel:
     def predict(self, img_input: Union[str, bytes]) -> Dict:
         """
         Predict disease from image
-        
-        Args:
-            img_input: Either file path or image bytes
-            
-        Returns:
-            Dictionary with prediction results
+
+        Args: img_input: Either file path or image bytes
+        Returns: Dictionary with prediction results
         """
         try:
             if self.model is None:
@@ -128,6 +121,14 @@ class DiseaseModel:
             predictions = self.model.predict(img_array, verbose=0)
             pred_index = int(np.argmax(predictions[0]))
             confidence = float(np.max(predictions[0])) * 100
+            top_3_indices = np.argsort(predictions[0])[-3:][::-1]
+            top_3_predictions = [
+                {
+                    "pest": self.class_names[i],
+                    "confidence": round(float(predictions[0][i]) * 100, 2)
+                }
+                for i in top_3_indices
+            ]
             
             # Get class label
             class_name = CLASS_DICT.get(pred_index, "Unknown")
@@ -143,7 +144,8 @@ class DiseaseModel:
                 "plant": plant,
                 "disease": disease,
                 "confidence": round(confidence, 2),
-                "is_healthy": "healthy" in disease.lower()
+                "is_healthy": "healthy" in disease.lower(),
+                "top_3_predictions": top_3_predictions
             }
         except Exception as e:
             logger.error(f"Prediction error: {e}")
