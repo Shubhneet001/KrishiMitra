@@ -1,5 +1,5 @@
 <h1 align="center">
-  Krishi Mitra: AI-Powered Agricultural Assistant
+  KrishiMitra: Agricultural Assistant
 </h1>
 
 <div align="center">
@@ -51,7 +51,7 @@ An intelligent conversational AI assistant powered by **Llama 3** and **LangChai
 - Chatbot has current location's weather context.
 - Contextual memory and real-time adaptability
 
-- <p align="center">
+<p align="center">
   <img src="https://github.com/user-attachments/assets/02e61213-334a-44cc-8b74-16edc3f05579" width="60%"/>
 </p>
 
