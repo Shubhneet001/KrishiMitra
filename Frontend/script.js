@@ -1,13 +1,8 @@
-// script.js
-
 document.addEventListener('DOMContentLoaded', () => {
-
     // API Configuration
     const API_BASE_URL = 'http://localhost:8000';
 
-    // ============================================================================
     // Navbar Functionality
-    // ============================================================================
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
@@ -31,9 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ============================================================================
     // Weather Functionality
-    // ============================================================================
     const locationInput = document.getElementById('locationInput');
     const updateLocationBtn = document.getElementById('updateLocationBtn');
     const weatherDisplay = document.getElementById('weatherDisplay');
@@ -127,9 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch weather on page load with stored location
     fetchWeather(localStorage.getItem('userLocation'));
 
-    // ============================================================================
     // Tab Functionality
-    // ============================================================================
     const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     tabBtns.forEach(btn => {
@@ -142,9 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ============================================================================
     // Universal Image Upload Handler
-    // ============================================================================
     const setupUploadArea = (type) => {
         const uploadArea = document.getElementById(`${type}Upload`);
         const input = document.getElementById(`${type}Input`);
@@ -210,14 +199,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p><strong>Status:</strong> ${data.is_healthy ? '<span style="color: green;">✓ Healthy</span>' : '<span style="color: red;">⚠ Disease Detected</span>'}</p>
                             <p><strong>Confidence:</strong> ${data.confidence}%</p>
                             <div class="confidence-bar"><div class="confidence-fill" style="width: ${data.confidence}%"></div></div>
-                            ${!data.is_healthy ? `<button class="btn get-solution-btn" data-problem="${data.disease}">Get Solution via AI</button>` : ''}
+                            ${!data.is_healthy ? `<button class="btn get-solution-btn" data-problem="${data.disease}">Get Solution</button>` : ''}
                         `;
                     } else if (type === 'pest') {
                         resultContent.innerHTML = `
                             <p><strong>Detected Pest:</strong> ${data.predicted_pest}</p>
                             <p><strong>Confidence:</strong> ${data.confidence}%</p>
                             <div class="confidence-bar"><div class="confidence-fill" style="width: ${data.confidence}%"></div></div>
-                            <button class="btn get-solution-btn" data-problem="${data.predicted_pest}">Get Solution via AI</button>
+                            <button class="btn get-solution-btn" data-problem="${data.predicted_pest}">Get Solution</button>
                         `;
                     }
                 } else {
@@ -237,9 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupUploadArea('disease');
     setupUploadArea('pest');
 
-    // ============================================================================
     // Get Solution Button Functionality
-    // ============================================================================
     document.querySelector('.upload-container').addEventListener('click', (e) => {
         if (e.target && e.target.matches('.get-solution-btn')) {
             const problem = e.target.getAttribute('data-problem');
@@ -253,9 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ============================================================================
     // Chatbot Functionality
-    // ============================================================================
     const chatbotToggle = document.getElementById('chatbotToggle');
     const chatbotContainer = document.getElementById('chatbotContainer');
     const chatbotClose = document.getElementById('chatbotClose');
@@ -330,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Failed to clear backend memory:", error);
         }
-        chatbotMessages.innerHTML = `<div class="message bot"><p>👋 Hello! I'm Krishi Mitra. How can I help you today?</p></div>`;
+        chatbotMessages.innerHTML = `<div class="message bot"><p>Hello! I'm Krishi Mitra. How can I help you today?</p></div>`;
     };
 
     chatSend.addEventListener('click', sendMessage);

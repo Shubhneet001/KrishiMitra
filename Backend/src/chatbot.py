@@ -227,23 +227,16 @@ Your response:
     def ask(self, query: str) -> str:
         """
         Process a user query and return response
-        
-        Args:
-            query: User's question
-            
-        Returns:
-            HTML formatted response
+
+        Args: query: User's question
+        Returns: HTML formatted response
         """
         try:
-            # Invoke the chain
             answer = self.chain.invoke(query)
-            
-            # Save to memory
             self.buffer_memory.save_context(
                 {"input": query},
                 {"output": answer}
             )
-            
             self.vector_memory.save_context(
                 {"input": query},
                 {"output": answer, "timestamp": datetime.now(timezone.utc).isoformat()}
@@ -258,6 +251,15 @@ Your response:
         """Clear conversation memory"""
         try:
             self.buffer_memory.clear()
+
+            memory_store = FAISS.from_texts([""], self.embeddings)
+            memory_retriever = memory_store.as_retriever(
+                search_type="mmr",
+                search_kwargs={'k': 5, 'fetch_k': 10, 'lambda_mult': 0.7}
+            )
+            vector_memory = VectorStoreRetrieverMemory(retriever=memory_retriever)
+
+            self.memory.memories = [self.buffer_memory, self.vector_memory]
             logger.info("Memory cleared successfully")
         except Exception as e:
             logger.error(f"Error clearing memory: {e}")

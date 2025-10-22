@@ -129,6 +129,9 @@ Install dependencies:
 pip install -r Backend/requirements.txt
 ```
 
+Download Models from the given link:
+[https://drive.google.com/drive/folders/1q_Ec2i3RGr8As95IRexS4qwRe9VtNOk3?usp=drive_link](https://drive.google.com/drive/folders/1q_Ec2i3RGr8As95IRexS4qwRe9VtNOk3?usp=drive_link)
+
 ---
 
 ### 3. Configure Environment Variables
@@ -175,17 +178,22 @@ Navigate to the `Frontend` folder and open the `index.html` file directly in you
 ## Project Structure
 
 ```
-krishi-mitra/
+KrishiMitra/
 ├── Backend/
+│   ├── experiment-notebooks/
+│   │   ├── chatbot.ipynb
+│   │   ├── disease_classification.ipynb
+│   │   └── pest_classificatiion.ipynb
 │   ├── models/
-│   │   ├── crop_disease_detection.h5
-│   │   └── pest_classification.keras
-│   ├── .env
-│   ├── chatbot.py
-│   ├── disease_model.py
+│   │   ├── disease_classifier.h5
+│   │   └── pest_classifier.keras
+│   ├── src/
+│   │   ├── chatbot.py
+│   │   ├── disease_model.py
+│   │   └── pest_model.py
 │   ├── main.py
-│   ├── pest_model.py
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── .env
 ├── Frontend/
 │   ├── index.html
 │   ├── script.js
